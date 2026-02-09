@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "go-slides-dev-secret-key-change-in-production"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "3d925eca64124a8130857ea9d97e38c0"
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or f"sqlite:///{BASE_DIR / 'instance' / 'goslides.db'}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = BASE_DIR / "app" / "uploads" / "guidelines"
