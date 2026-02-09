@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('admin.activities_list', year_id=activity.year_id) }}" class="hover:text-primary">{{ activity.year.name }}</a>
+  <span class="mx-2">/</span>
+  <a href="{{ url_for('admin.activity_edit', activity_id=activity.id) }}" class="hover:text-primary">{{ activity.title }}</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">Galeri</span>
+</nav>
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Galeri – {{ activity.title }}</h1>
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 p-6 mb-8">
+  <h2 class="font-heading font-semibold text-lg text-gray-800 mb-4">Unggah gambar</h2>
+  <form method="post" action="" enctype="multipart/form-data" class="flex flex-wrap gap-4 items-end">
+    {{ form.hidden_tag() }}
+    <div class="flex-1 min-w-[200px]">
+      <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+      {{ form.image(class="w-full text-sm") }}
+    </div>
+    <div class="flex-1 min-w-[200px]">
+      <label for="caption" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+      {{ form.caption(class="w-full px-4 py-2.5 rounded-xl border border-gray-300") }}
+    </div>
+    <div class="flex items-center gap-2">
+      {{ form.is_featured(class="rounded border-gray-300 text-primary focus:ring-primary") }}
+      <label for="is_featured" class="text-sm text-gray-700">Tampilkan di beranda</label>
+    </div>
+    <button type="submit" class="bg-primary text-white px-5 py-2.5 rounded-xl font-medium hover:opacity-90">Unggah</button>
+  </form>
+</div>
+
+<h2 class="font-heading font-semibold text-lg text-gray-800 mb-4">Gambar ({{ gallery|length }})</h2>
+{% if gallery %}
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+  {% for img in gallery %}
+  <div class="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-soft">
+    <a href="{{ url_for('public.serve_gallery_image', filename=img.file) }}" target="_blank" class="block aspect-square">
+      <img src="{{ url_for('public.serve_gallery_image', filename=img.file) }}" alt="{{ img.caption or '' }}" class="w-full h-full object-cover">
+    </a>
+    <div class="p-3">
+      {% if img.caption %}<p class="text-sm text-gray-600 truncate">{{ img.caption }}</p>{% endif %}
+      <div class="flex flex-wrap gap-2 mt-2">
+        <form method="post" action="{{ url_for('admin.gallery_item_featured', item_id=img.id) }}" class="inline">
+          <input type="hidden" name="featured" value="{{ '0' if img.is_featured else '1' }}">
+          <button type="submit" class="text-xs {% if img.is_featured %}text-accent font-medium{% else %}text-gray-500 hover:text-primary{% endif %}">
+            {{ '★ Unggulan' if img.is_featured else '☆ Jadikan unggulan' }}
+          </button>
+        </form>
+        <form method="post" action="{{ url_for('admin.gallery_item_delete', item_id=img.id) }}" class="inline" onsubmit="return confirm('Hapus gambar ini?');">
+          <button type="submit" class="text-xs text-red-600 hover:underline">Hapus</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500">Belum ada gambar. Unggah di atas.</p>
+{% endif %}
+{% endblock %}

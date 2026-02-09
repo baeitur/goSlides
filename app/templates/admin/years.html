@@ -1,0 +1,57 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Tahun acara</h1>
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 p-6 mb-8">
+  <h2 class="font-heading font-semibold text-lg text-gray-800 mb-4">Tambah tahun</h2>
+  <form method="post" action="{{ url_for('admin.years_list') }}" class="flex flex-wrap gap-3">
+    {{ form.hidden_tag() }}
+    {{ form.name(class="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary") }}
+    {{ form.theme(class="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary", placeholder="Tema acara (opsional)") }}
+    <button type="submit" class="bg-primary text-white px-5 py-2.5 rounded-xl font-medium hover:opacity-90">Tambah</button>
+  </form>
+</div>
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
+  <table class="w-full">
+    <thead class="bg-bg border-b border-gray-200">
+      <tr>
+        <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Tahun</th>
+        <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Status</th>
+        <th class="text-right py-3 px-4 font-heading font-semibold text-gray-800">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for y in years %}
+      <tr class="border-b border-gray-100 hover:bg-bg/50">
+        <td class="py-3 px-4">
+          <div>{{ y.name }}</div>
+          {% if y.theme %}<div class="text-xs text-gray-500 italic mt-1">Tema: {{ y.theme }}</div>{% endif %}
+        </td>
+        <td class="py-3 px-4">
+          {% if y.active %}
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
+          {% else %}
+          <form method="post" action="{{ url_for('admin.year_activate', year_id=y.id) }}" class="inline">
+            <button type="submit" class="text-primary text-sm font-medium hover:underline">Jadikan aktif</button>
+          </form>
+          {% endif %}
+        </td>
+        <td class="py-3 px-4 text-right">
+          <a href="{{ url_for('admin.year_edit', year_id=y.id) }}" class="text-primary text-sm font-medium hover:underline">Ubah</a>
+          <span class="mx-2 text-gray-300">|</span>
+          <a href="{{ url_for('admin.activities_list', year_id=y.id) }}" class="text-primary text-sm font-medium hover:underline">Acara</a>
+          <span class="mx-2 text-gray-300">|</span>
+          <form method="post" action="{{ url_for('admin.year_delete', year_id=y.id) }}" class="inline" onsubmit="return confirm('Hapus tahun ini dan semua acaranya?');">
+            <button type="submit" class="text-red-600 text-sm font-medium hover:underline">Hapus</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not years %}
+  <p class="p-8 text-gray-500 text-center">Belum ada tahun. Tambahkan di atas.</p>
+  {% endif %}
+</div>
+{% endblock %}

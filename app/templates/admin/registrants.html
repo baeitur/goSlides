@@ -1,0 +1,81 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('admin.activities_list', year_id=activity.year_id) }}" class="hover:text-primary">{{ activity.year.name }}</a>
+  <span class="mx-2">/</span>
+  <a href="{{ url_for('admin.activity_edit', activity_id=activity.id) }}" class="hover:text-primary">{{ activity.title }}</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">Pendaftar</span>
+</nav>
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Pendaftar – {{ activity.title }}</h1>
+<div class="flex flex-wrap items-center gap-4 mb-6">
+  <p class="text-gray-600">{{ registrants|length }} total</p>
+  <a href="{{ url_for('admin.registrants_export_pdf', activity_id=activity.id) }}" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-medium hover:opacity-90 text-sm">
+    Ekspor PDF
+  </a>
+</div>
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-bg border-b border-gray-200">
+        <tr>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">QR</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Nama</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Sekolah</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Email</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Telepon</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Status</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Hadir</th>
+          <th class="text-right py-3 px-4 font-heading font-semibold text-gray-800">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in registrants %}
+        <tr class="border-b border-gray-100 hover:bg-bg/50">
+          <td class="py-3 px-4">
+            <a href="{{ url_for('admin.registrant_qr', registrant_id=r.id) }}" target="_blank" class="inline-block w-10 h-10 rounded border border-gray-200 overflow-hidden bg-gray-50">
+              <img src="{{ url_for('admin.registrant_qr', registrant_id=r.id) }}" alt="QR" class="w-full h-full object-contain">
+            </a>
+          </td>
+          <td class="py-3 px-4 font-medium">{{ r.name }}</td>
+          <td class="py-3 px-4 text-gray-600">{{ r.school }}</td>
+          <td class="py-3 px-4 text-gray-600">{{ r.email }}</td>
+          <td class="py-3 px-4 text-gray-600">{{ r.phone or '—' }}</td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-medium {% if r.status == 'verified' %}bg-green-100 text-green-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+              {{ 'Terverifikasi' if r.status == 'verified' else 'Menunggu' }}
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            {% if r.attended_at %}
+            <span class="text-green-600 text-sm">✓ {{ r.attended_at.strftime('%d/%m %H:%M') if r.attended_at else '' }}</span>
+            {% else %}
+            <form method="post" action="{{ url_for('admin.registrant_mark_attended', registrant_id=r.id) }}" class="inline">
+              <button type="submit" class="text-primary text-sm font-medium hover:underline">Tandai hadir</button>
+            </form>
+            {% endif %}
+          </td>
+          <td class="py-3 px-4 text-right">
+            {% if r.status != 'verified' %}
+            <form method="post" action="{{ url_for('admin.registrant_verify', registrant_id=r.id) }}" class="inline">
+              <button type="submit" class="text-primary text-sm font-medium hover:underline">Verifikasi</button>
+            </form>
+            {% else %}
+            <form method="post" action="{{ url_for('admin.registrant_status', registrant_id=r.id) }}" class="inline">
+              <input type="hidden" name="status" value="pending">
+              <button type="submit" class="text-gray-600 text-sm hover:underline">Batalkan verifikasi</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if not registrants %}
+  <p class="p-8 text-gray-500 text-center">Belum ada pendaftar.</p>
+  {% endif %}
+</div>
+<p class="text-sm text-gray-500 mt-4">Pindai kode QR peserta di <strong>{{ checkin_base_url }}/checkin/&lt;kode&gt;</strong> untuk mencatat kehadiran.</p>
+{% endblock %}

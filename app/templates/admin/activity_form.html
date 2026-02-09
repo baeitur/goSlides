@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+{% if activity %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('admin.activities_list', year_id=year.id) }}" class="hover:text-primary">{{ year.name }}</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">Ubah acara</span>
+</nav>
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Ubah acara</h1>
+{% else %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('admin.activities_list', year_id=year.id) }}" class="hover:text-primary">{{ year.name }}</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">Acara baru</span>
+</nav>
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Acara baru</h1>
+{% endif %}
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 p-8 max-w-2xl">
+  <form method="post" action="" enctype="multipart/form-data" class="space-y-5">
+    {{ form.hidden_tag() }}
+    <div>
+      <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Judul *</label>
+      {{ form.title(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary") }}
+      {% if form.title.errors %}<p class="text-red-600 text-sm mt-1">{{ form.title.errors[0] }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+      {{ form.description(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary", rows=4) }}
+    </div>
+    <div>
+      <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+      {{ form.date(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary") }}
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
+        {{ form.type(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary") }}
+      </div>
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        {{ form.status(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary") }}
+      </div>
+    </div>
+    <div>
+      <label for="quota" class="block text-sm font-medium text-gray-700 mb-1">Kuota (kosongkan tanpa batas; pendaftaran otomatis ditutup saat penuh)</label>
+      {{ form.quota(class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary", type="number", min="0", placeholder="") }}
+    </div>
+    <div>
+      <label for="guideline" class="block text-sm font-medium text-gray-700 mb-1">Panduan PDF</label>
+      {{ form.guideline(class="w-full px-4 py-2 rounded-xl border border-gray-300") }}
+      {% if activity and activity.guideline_file %}<p class="text-sm text-gray-500 mt-1">Berkas saat ini terlampir. Unggah baru untuk mengganti.</p>{% endif %}
+    </div>
+    <div class="pt-2">
+      <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Simpan</button>
+      <a href="{{ url_for('admin.activities_list', year_id=year.id) }}" class="ml-3 text-gray-600 hover:text-gray-800">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

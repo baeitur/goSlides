@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Check-in{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto text-center py-12">
+  {% if success %}
+  <div class="rounded-2xl bg-green-100 text-green-800 p-8">
+    <p class="text-4xl mb-4">✓</p>
+    <h1 class="font-heading font-bold text-xl mb-2">Check-in {{ 'berhasil dicatat' if not already_attended else 'sudah pernah dicatat' }}</h1>
+    <p class="font-medium">{{ registrant.name }}</p>
+    <p class="text-sm text-green-700 mt-1">{{ registrant.school }}</p>
+    {% if already_attended %}<p class="text-sm mt-2">Peserta ini sudah tercatat hadir sebelumnya.</p>{% endif %}
+  </div>
+  {% else %}
+  <div class="rounded-2xl bg-amber-100 text-amber-800 p-8">
+    <p class="text-4xl mb-4">✕</p>
+    <h1 class="font-heading font-bold text-xl">Kode tidak valid atau kedaluwarsa</h1>
+    <p class="mt-2 text-sm">Tautan check-in ini tidak valid.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

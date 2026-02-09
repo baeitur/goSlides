@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Tentang{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl">
+  <h1 class="font-heading font-bold text-3xl text-gray-900 mb-6">{{ about_content.title }}</h1>
+  <div class="bg-white rounded-2xl shadow-card border border-gray-100 p-8 sm:p-10">
+    {% if about_content.description %}
+    <div class="prose prose-gray max-w-none mb-8 whitespace-pre-line">{{ about_content.description }}</div>
+    {% endif %}
+    {% if about_content.goals %}
+    <h2 class="font-heading font-semibold text-xl text-gray-800 mb-3">Tujuan Kami</h2>
+    <div class="prose prose-gray max-w-none mb-8 whitespace-pre-line">{{ about_content.goals }}</div>
+    {% endif %}
+    {% if about_content.location %}
+    <h2 class="font-heading font-semibold text-xl text-gray-800 mb-3">Lokasi</h2>
+    <p class="text-gray-600">{{ about_content.location }}</p>
+    {% endif %}
+    {% if not about_content.description and not about_content.goals and not about_content.location %}
+    <p class="text-gray-500">Konten akan tampil di sini setelah diisi oleh admin.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

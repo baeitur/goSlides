@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ activity.title }}{% endblock %}
+
+{% block content %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('public.events') }}" class="hover:text-primary">Acara</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">{{ activity.title }}</span>
+</nav>
+
+<article class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden max-w-4xl">
+  {% if gallery %}
+  <div class="h-64 bg-gray-300 overflow-hidden">
+    <img src="{{ url_for('public.serve_gallery_image', filename=gallery[0].file) }}" alt="{{ activity.title }}" class="w-full h-full object-cover">
+  </div>
+  {% endif %}
+  <div class="p-8 sm:p-10">
+    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
+      {% if activity.status == 'open' %}bg-green-100 text-green-800
+      {% elif activity.status == 'upcoming' %}bg-amber-100 text-amber-800
+      {% else %}bg-gray-100 text-gray-600{% endif %}">
+      {% if activity.status == 'open' %}Terbuka{% elif activity.status == 'upcoming' %}Segera{% else %}Ditutup{% endif %}
+    </span>
+    <span class="ml-2 inline-block px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+      {{ activity.type|replace('-', ' ')|title }}
+    </span>
+    <h1 class="font-heading font-bold text-3xl text-gray-900 mt-4">{{ activity.title }}</h1>
+    <p class="text-gray-500 mt-2">{{ activity.date.strftime('%d %B %Y') if activity.date else 'Tanggal menyusul' }}</p>
+    {% if countdown_date %}
+    <div id="countdown" class="mt-4 flex flex-wrap gap-3 font-heading font-semibold text-primary" data-target="{{ countdown_date.isoformat() }}">
+      <span class="rounded-lg bg-primary/10 px-3 py-1"><span id="cd-days">0</span>h</span>
+      <span class="rounded-lg bg-primary/10 px-3 py-1"><span id="cd-hours">0</span>j</span>
+      <span class="rounded-lg bg-primary/10 px-3 py-1"><span id="cd-mins">0</span>m</span>
+      <span class="rounded-lg bg-primary/10 px-3 py-1"><span id="cd-secs">0</span>d</span>
+    </div>
+    {% endif %}
+
+    <div class="prose prose-gray mt-6 max-w-none">
+      {{ activity.description|default('Tidak ada deskripsi.', true) }}
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-4">
+      {% if activity.guideline_file %}
+      <a href="{{ url_for('public.download_guideline', activity_id=activity.id) }}" class="inline-flex items-center gap-2 bg-accent text-gray-900 px-5 py-2.5 rounded-xl font-medium hover:opacity-90 transition shadow-soft">
+        <span>📄</span> Unduh Panduan (PDF)
+      </a>
+      {% endif %}
+      {% if activity.can_register %}
+      <a href="{{ url_for('public.register', activity_id=activity.id) }}" class="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-medium hover:opacity-90 transition shadow-soft">
+        Daftar Sekarang
+      </a>
+      {% elif activity.status == 'open' and activity.is_full %}
+      <span class="inline-flex items-center gap-2 bg-gray-200 text-gray-600 px-5 py-2.5 rounded-xl font-medium cursor-not-allowed">
+        Kuota penuh
+      </span>
+      {% elif activity.status == 'upcoming' %}
+      <span class="text-gray-500">Pendaftaran akan segera dibuka.</span>
+      {% endif %}
+    </div>
+
+    {% if activity.quota %}
+    <p class="text-sm text-gray-500 mt-4">Kuota: {{ activity.registrants.count() }} / {{ activity.quota }}</p>
+    {% endif %}
+    {% if gallery %}
+    <div class="mt-8 pt-8 border-t border-gray-100">
+      <h3 class="font-heading font-semibold text-lg text-gray-800 mb-3">Galeri</h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+        {% for img in gallery[:8] %}
+        <a href="{{ url_for('public.serve_gallery_image', filename=img.file) }}" target="_blank" class="rounded-xl overflow-hidden border border-gray-100 aspect-square">
+          <img src="{{ url_for('public.serve_gallery_image', filename=img.file) }}" alt="{{ img.caption or '' }}" class="w-full h-full object-cover">
+        </a>
+        {% endfor %}
+      </div>
+      <a href="{{ url_for('public.activity_gallery', activity_id=activity.id) }}" class="text-primary font-medium text-sm hover:underline">Lihat semua galeri →</a>
+    </div>
+    {% endif %}
+  </div>
+</article>
+{% if countdown_date %}
+<script>
+(function(){
+  var target = document.getElementById('countdown');
+  if (!target) return;
+  var dateStr = target.getAttribute('data-target');
+  var end = new Date(dateStr + 'T23:59:59');
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function update(){
+    var now = new Date();
+    if (now >= end) return;
+    var d = Math.floor((end - now) / 86400000);
+    var h = Math.floor(((end - now) % 86400000) / 3600000);
+    var m = Math.floor(((end - now) % 3600000) / 60000);
+    var s = Math.floor(((end - now) % 60000) / 1000);
+    document.getElementById('cd-days').textContent = d;
+    document.getElementById('cd-hours').textContent = pad(h);
+    document.getElementById('cd-mins').textContent = pad(m);
+    document.getElementById('cd-secs').textContent = pad(s);
+  }
+  update();
+  setInterval(update, 1000);
+})();
+</script>
+{% endif %}
+{% endblock %}

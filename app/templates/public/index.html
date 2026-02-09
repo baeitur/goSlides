@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Beranda{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/80 via-accent/30 to-white/0 shadow-soft mb-12">
+  <style>
+    .hero-logo-animate {
+      animation: fadeScaleLogo 2.2s cubic-bezier(.4,0,.2,1) both, bounceLogo 2.2s 1.2s cubic-bezier(.4,0,.2,1) infinite;
+      filter: drop-shadow(0 0 32px #F4B23C) drop-shadow(0 0 16px #1BA3A8);
+    }
+    @keyframes fadeScaleLogo {
+      0% { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+      40% { opacity: 0.7; transform: scale(1.15) rotate(5deg); }
+      70% { opacity: 1; transform: scale(0.95) rotate(-3deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    @keyframes bounceLogo {
+      0%, 100% { transform: translateY(0); }
+      20% { transform: translateY(-12px); }
+      40% { transform: translateY(0); }
+      60% { transform: translateY(-6px); }
+      80% { transform: translateY(0); }
+    }
+    .particle {
+      position: absolute;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #1BA3A8 60%, #F4B23C 100%);
+      opacity: 0.18;
+      animation: floatParticle 6s infinite ease-in-out;
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.15); }
+      100% { transform: translateY(0px) scale(1); }
+    }
+  </style>
+  <div class="absolute inset-0">
+    <div class="w-full h-full bg-gradient-to-br from-white/90 via-primary/50 to-white/10"></div>
+    <span class="particle" style="width:48px;height:48px;left:10%;top:20%;animation-delay:0s;"></span>
+    <span class="particle" style="width:32px;height:32px;left:80%;top:30%;animation-delay:1.2s;"></span>
+    <span class="particle" style="width:36px;height:36px;left:25%;top:70%;animation-delay:2.1s;"></span>
+    <span class="particle" style="width:28px;height:28px;left:60%;top:80%;animation-delay:3.5s;"></span>
+    <span class="particle" style="width:40px;height:40px;left:50%;top:10%;animation-delay:2.8s;"></span>
+    <span class="particle" style="width:48px;height:48px;left:10%;top:20%;animation-delay:0s;"></span>
+    <span class="particle" style="width:32px;height:32px;left:80%;top:30%;animation-delay:1.2s;"></span>
+    <span class="particle" style="width:36px;height:36px;left:25%;top:70%;animation-delay:2.1s;"></span>
+    <span class="particle" style="width:28px;height:28px;left:60%;top:80%;animation-delay:3.5s;"></span>
+    <span class="particle" style="width:40px;height:40px;left:50%;top:10%;animation-delay:2.8s;"></span>
+  </div>
+  <div class="relative px-8 py-16 sm:py-20 text-center">
+
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Go Slides" class="h-56 w-auto mx-auto" loading="lazy">
+    <p class="text-white/90 text-xl sm:text-2xl font-heading font-semibold">{{ event_theme }}</p>
+    {% if active_year %}
+    <p class="text-primary-100 text-xl sm:text-3xl mb-2"><span class="font-semibold text-white">{{ active_year.name }}</span></p>
+    {% endif %}
+    {% if countdown_date %}
+    <div id="countdown" class="mt-8 inline-flex flex-wrap justify-center gap-4 font-heading font-bold text-primary" data-target="{{ countdown_date.isoformat() }}">
+      <span class="rounded-xl bg-primary/80 text-white shadow px-4 py-2"><span id="cd-days">0</span> <span class="text-sm font-normal opacity-90">Hari</span></span>
+      <span class="rounded-xl bg-accent/80 text-white shadow px-4 py-2"><span id="cd-hours">0</span> <span class="text-sm font-normal opacity-90">Jam</span></span>
+      <span class="rounded-xl bg-primary/80 text-white shadow px-4 py-2"><span id="cd-mins">0</span> <span class="text-sm font-normal opacity-90">Menit</span></span>
+      <span class="rounded-xl bg-accent/80 text-white shadow px-4 py-2"><span id="cd-secs">0</span> <span class="text-sm font-normal opacity-90">Detik</span></span>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Events preview -->
+<section>
+  <h2 class="font-heading font-bold text-2xl text-gray-800 mb-6">Acara & Lomba</h2>
+  {% if activities %}
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for act in activities %}
+    <a href="{{ url_for('public.competition_detail', activity_id=act.id) }}" class="block group">
+      <article class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden flex flex-col hover:shadow-lg transition">
+        {% if act.gallery_items.first() %}
+        <div class="h-48 bg-gray-200 overflow-hidden">
+          <img src="{{ url_for('public.serve_gallery_image', filename=act.gallery_items.first().file) }}" alt="{{ act.title }}" class="w-full h-full object-cover">
+        </div>
+        {% else %}
+        <div class="h-48 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+          <span class="text-4xl text-primary/30">📸</span>
+        </div>
+        {% endif %}
+        <div class="p-6 flex flex-col flex-1">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
+            {% if act.status == 'open' %}bg-green-100 text-green-800
+            {% elif act.status == 'upcoming' %}bg-amber-100 text-amber-800
+            {% else %}bg-gray-100 text-gray-600{% endif %}">
+            {% if act.status == 'open' %}Terbuka{% elif act.status == 'upcoming' %}Segera{% else %}Ditutup{% endif %}
+          </span>
+          <h3 class="font-heading font-bold text-lg text-gray-900 mt-3 group-hover:text-primary transition">{{ act.title }}</h3>
+          <p class="text-gray-500 text-sm mt-1">{{ act.date.strftime('%d %b %Y') if act.date else 'Tanggal menyusul' }}</p>
+          <p class="text-gray-600 text-sm mt-2 line-clamp-2">{{ act.description[:120] }}{% if act.description|length > 120 %}…{% endif %}</p>
+          <span class="inline-flex items-center gap-1 text-primary font-medium text-sm mt-4 group-hover:gap-2 transition">
+            Lihat detail <span>→</span>
+          </span>
+        </div>
+      </article>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="mt-8 text-center">
+    <a href="{{ url_for('public.events') }}" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition">
+      Lihat semua acara <span>→</span>
+    </a>
+  </div>
+  {% else %}
+  <div class="bg-white rounded-2xl shadow-soft p-12 text-center text-gray-500">
+    <p class="text-lg">Belum ada acara untuk tahun ini. Silakan cek kembali nanti.</p>
+  </div>
+  {% endif %}
+</section>
+
+<!-- Gallery -->
+<section class="mb-12">
+  <h2 class="font-heading font-bold text-2xl text-gray-800 mb-6">Galeri</h2>
+  {% if gallery_photos %}
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    {% for img in gallery_photos %}
+    <a href="{{ url_for('public.serve_gallery_image', filename=img.file) }}" target="_blank" class="block rounded-2xl overflow-hidden shadow-card border border-gray-100 aspect-square">
+      <img src="{{ url_for('public.serve_gallery_image', filename=img.file) }}" alt="{{ img.caption or 'Galeri' }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+    </a>
+    {% endfor %}
+  </div>
+  {% if featured_photos %}
+  <p class="text-sm text-gray-500 mt-3">Foto unggulan</p>
+  {% endif %}
+  {% else %}
+  <div class="bg-white rounded-2xl shadow-soft p-8 text-center text-gray-500">
+    <p>Belum ada foto di galeri. Foto dari acara akan tampil di sini.</p>
+  </div>
+  {% endif %}
+</section>
+
+<!-- Sponsor/Partner Section -->
+{% if sponsors %}
+<section class="my-16">
+  <h2 class="font-heading text-xl sm:text-2xl font-bold text-center mb-6">Sponsor & Partner</h2>
+  <div class="flex flex-wrap justify-center items-center gap-8">
+    {% for s in sponsors %}
+      <a href="{{ s.link or '#' }}" target="_blank" class="block group">
+        <img src="{{ url_for('public.serve_sponsor_logo', filename=s.logo) }}" alt="{{ s.name }}" class="h-16 sm:h-16 object-contain grayscale group-hover:grayscale-0 transition duration-300 mx-auto" loading="lazy">
+        <!-- <div class="text-xs text-center mt-2 text-gray-500">{{ s.name }}</div> -->
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if countdown_date %}
+<script>
+(function(){
+  var target = document.getElementById('countdown');
+  if (!target) return;
+  var dateStr = target.getAttribute('data-target');
+  var end = new Date(dateStr + 'T23:59:59');
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function update(){
+    var now = new Date();
+    if (now >= end) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hours').textContent = '0';
+      document.getElementById('cd-mins').textContent = '0';
+      document.getElementById('cd-secs').textContent = '0';
+      return;
+    }
+    var d = Math.floor((end - now) / 86400000);
+    var h = Math.floor(((end - now) % 86400000) / 3600000);
+    var m = Math.floor(((end - now) % 3600000) / 60000);
+    var s = Math.floor(((end - now) % 60000) / 1000);
+    document.getElementById('cd-days').textContent = d;
+    document.getElementById('cd-hours').textContent = pad(h);
+    document.getElementById('cd-mins').textContent = pad(m);
+    document.getElementById('cd-secs').textContent = pad(s);
+  }
+  update();
+  setInterval(update, 1000);
+})();
+</script>
+{% endif %}
+{% endblock %}

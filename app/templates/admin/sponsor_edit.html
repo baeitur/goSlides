@@ -1,0 +1,28 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Edit Sponsor{% endblock %}
+{% block admin_content %}
+<div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6 mt-8">
+  <h2 class="font-heading text-2xl font-bold mb-4">Edit Sponsor/Partner</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="mb-4">
+      {{ form.name.label(class_="block font-medium mb-1") }}
+      {{ form.name(class_="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary") }}
+    </div>
+    <div class="mb-4">
+      {{ form.logo.label(class_="block font-medium mb-1") }}
+      {{ form.logo(class_="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary") }}
+      {% if sponsor.logo %}
+      <img src="{{ url_for('static', filename='uploads/' ~ sponsor.logo) }}" alt="Logo" class="h-16 mt-2">
+      {% endif %}
+    </div>
+    <div class="mb-4">
+      {{ form.link.label(class_="block font-medium mb-1") }}
+      {{ form.link(class_="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary") }}
+    </div>
+    <div>
+      {{ form.submit(class_="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:opacity-90") }}
+    </div>
+  </form>
+</div>
+{% endblock %}
