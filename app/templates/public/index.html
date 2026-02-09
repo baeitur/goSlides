@@ -51,8 +51,8 @@
   <div class="relative px-8 py-16 sm:py-20 text-center">
 
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Go Slides" class="h-56 w-auto mx-auto" loading="lazy">
-    <p class="text-white/90 text-xl sm:text-2xl font-heading font-semibold">{{ event_theme }}</p>
     {% if active_year %}
+    <p class="text-white/90 text-xl sm:text-2xl font-heading font-semibold">{{ active_year.theme }}</p>
     <p class="text-primary-100 text-xl sm:text-3xl mb-2"><span class="font-semibold text-white">{{ active_year.name }}</span></p>
     {% endif %}
     {% if countdown_date %}
