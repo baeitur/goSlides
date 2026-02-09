@@ -29,6 +29,9 @@ def create_app(config_class=Config):
         return User.query.get(int(user_id))
 
     with app.app_context():
+        # Pastikan folder instance selalu ada (untuk SQLite)
+        instance_dir = os.path.join(app.root_path, "instance")
+        os.makedirs(instance_dir, exist_ok=True)
         db.create_all()
         # Create default admin if none exists
         from app.services.auth_service import ensure_admin_exists
