@@ -173,3 +173,7 @@ def checkin(code):
     if not already:
         mark_attended_by_code(code)
     return render_template("public/checkin_result.html", success=True, registrant=reg, already_attended=already)
+
+@public_bp.route("/health")
+def health():
+    return "OK", 200

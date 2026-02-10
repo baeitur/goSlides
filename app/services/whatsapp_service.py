@@ -12,6 +12,8 @@ def send_whatsapp_message(phone: str, message: str) -> bool:
     Returns True if sent successfully (or no provider configured and we skip).
     """
     phone = (phone or "").strip().replace(" ", "").replace("-", "")
+    if phone.startswith("08"):
+        phone = "62" + phone[1:]
     if not phone or not message:
         return False
 
