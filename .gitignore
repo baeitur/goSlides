@@ -15,8 +15,9 @@ instance/
 *.env
 
 # Uploads
-uploads/*
-gallery/*
+app/uploads/*
+app/gallery/*
+app/guidelines/*
 
 # Editors
 .cursor/
