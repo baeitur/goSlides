@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtualenv
+venv/
+
+# Database
+instance/
+*.db
+
+# Env secrets
+.env
+*.env
+
+# Uploads
+uploads/*
+gallery/*
+
+# Editors
+.cursor/
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
