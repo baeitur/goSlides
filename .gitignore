@@ -16,8 +16,7 @@ instance/
 
 # Uploads
 app/uploads/*
-app/gallery/*
-app/guidelines/*
+
 
 # Editors
 .cursor/
