@@ -45,6 +45,54 @@ from app.services.sponsor_service import SponsorService
 
 admin_bp = Blueprint("admin", __name__)
 
+# ...existing code...
+
+import os
+import io
+from datetime import datetime
+from flask import Blueprint, render_template, redirect, url_for, flash, request, send_file, current_app
+from flask_login import login_user, logout_user, login_required, current_user
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, EmailField, PasswordField, SubmitField, TextAreaField, SelectField, IntegerField, DateField, BooleanField
+from wtforms.validators import DataRequired, Email, Optional
+import qrcode
+
+from app.models import db, User, Year, Activity, Registrant, Gallery
+from app.utils.decorators import operator_or_above, super_admin_required
+from app.services.auth_service import get_user_by_email, verify_password
+from app.services.year_service import get_all_years, set_active_year, create_year, update_year, delete_year
+from app.services.activity_service import (
+    get_activities_for_year,
+    get_activity_or_404,
+    create_activity,
+    update_activity,
+    delete_activity,
+    save_guideline_file,
+)
+from app.services.registrant_service import (
+    get_registrants_for_activity,
+    verify_registrant,
+    set_registrant_status,
+    mark_attended,
+    ensure_check_in_code,
+)
+from app.services.about_service import get_about, update_about
+from app.services.contact_service import get_all_messages
+from app.services.gallery_service import (
+    get_gallery_for_activity,
+    save_gallery_image,
+    add_gallery_item,
+    delete_gallery_item,
+    set_featured,
+)
+from app.services.activity_log_service import log_action, get_recent_logs
+from app.services.dashboard_service import get_dashboard_stats
+from app.services.pdf_export_service import export_registrants_pdf
+from app.services.sponsor_service import SponsorService
+
+admin_bp = Blueprint("admin", __name__)
+
 
 # ---- Auth forms ----
 class LoginForm(FlaskForm):
@@ -341,6 +389,21 @@ def registrant_status(registrant_id):
     flash("Status diperbarui.", "success")
     reg = Registrant.query.get_or_404(registrant_id)
     return redirect(url_for("admin.registrants_list", activity_id=reg.activity_id))
+
+# Place this route after admin_bp is defined and after all imports
+@admin_bp.route("/registrant_files/<filename>")
+@login_required
+@operator_or_above
+def registrant_file(filename):
+    from werkzeug.utils import secure_filename
+    uploads_dir = os.path.join(current_app.root_path, "uploads", "registrant_files")
+    safe_name = secure_filename(filename)
+    file_path = os.path.join(uploads_dir, safe_name)
+    if not os.path.isfile(file_path):
+        flash("Berkas tidak ditemukan.", "error")
+        return redirect(request.referrer or url_for("admin.index"))
+    return send_file(file_path, as_attachment=False)
+"""Admin routes: login, years, activities, registrants, about, contact, gallery, backup, activity log, PDF export, QR."""
 
 
 # ---- About ----

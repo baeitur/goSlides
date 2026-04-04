@@ -4,6 +4,7 @@ from datetime import date
 from flask import Blueprint, render_template, redirect, url_for, flash, send_from_directory, current_app
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, SubmitField, TextAreaField
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email
 
 from app.models import Activity
@@ -31,8 +32,9 @@ from app.services.sponsor_service import SponsorService
 class RegistrationForm(FlaskForm):
     name = StringField("Full Name", validators=[DataRequired()])
     school = StringField("School / Institution", validators=[DataRequired()])
-    phone = StringField("Phone (optional)")
-    email = EmailField("Email", validators=[DataRequired(), Email()])
+    phone = StringField("No WA", validators=[DataRequired()])
+    email = EmailField("Email", validators=[Email()])
+    file = FileField("Berkas", validators=[FileAllowed(["pdf", "jpg", "jpeg", "png", "doc", "docx"], "Berkas tidak valid")])
     submit = SubmitField("Register")
 
 
@@ -136,12 +138,22 @@ def register(activity_id):
 
     form = RegistrationForm()
     if form.validate_on_submit():
+        file_data = form.file.data
+        filename = None
+        if file_data:
+            from werkzeug.utils import secure_filename
+            uploads_dir = os.path.join(current_app.root_path, "uploads", "registrant_files")
+            os.makedirs(uploads_dir, exist_ok=True)
+            filename = secure_filename(file_data.filename)
+            file_path = os.path.join(uploads_dir, filename)
+            file_data.save(file_path)
         reg = create_registrant(
             activity_id=activity.id,
             name=form.name.data,
             school=form.school.data,
             phone=form.phone.data,
             email=form.email.data,
+            file=filename,
         )
         notify_registration_confirmation(reg, activity)
         flash("Pendaftaran berhasil dikirim. Kami akan memverifikasi pendaftaran Anda segera.", "success")

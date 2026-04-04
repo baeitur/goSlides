@@ -27,6 +27,7 @@
           <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Telepon</th>
           <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Status</th>
           <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Hadir</th>
+          <th class="text-left py-3 px-4 font-heading font-semibold text-gray-800">Lihat Berkas</th>
           <th class="text-right py-3 px-4 font-heading font-semibold text-gray-800">Aksi</th>
         </tr>
       </thead>
@@ -54,6 +55,13 @@
             <form method="post" action="{{ url_for('admin.registrant_mark_attended', registrant_id=r.id) }}" class="inline">
               <button type="submit" class="text-primary text-sm font-medium hover:underline">Tandai hadir</button>
             </form>
+            {% endif %}
+          </td>
+          <td class="py-3 px-4">
+            {% if r.file %}
+              <a href="{{ url_for('admin.registrant_file', filename=r.file) }}" target="_blank" class="text-primary underline">Lihat Berkas</a>
+            {% else %}
+              <span class="text-gray-400">-</span>
             {% endif %}
           </td>
           <td class="py-3 px-4 text-right">

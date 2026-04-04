@@ -17,7 +17,7 @@ def get_registrants_for_activity(activity_id, status=None):
     return q.order_by(Registrant.created_at.desc()).all()
 
 
-def create_registrant(activity_id, name, school, phone, email):
+def create_registrant(activity_id, name, school, phone, email, file=None):
     code = _generate_check_in_code()
     while Registrant.query.filter_by(check_in_code=code).first():
         code = _generate_check_in_code()
@@ -27,6 +27,7 @@ def create_registrant(activity_id, name, school, phone, email):
         school=school,
         phone=phone or "",
         email=email,
+        file=file,
         status="pending",
         check_in_code=code,
     )
