@@ -75,7 +75,7 @@ class Registrant(db.Model):
     name = db.Column(db.String(255), nullable=False)
     school = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(64))
-    email = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=True)
     file = db.Column(db.String(255), nullable=True)  # uploaded file name
     status = db.Column(db.String(32), nullable=False, default="pending")
     check_in_code = db.Column(db.String(64), unique=True, nullable=True)  # for QR attendance

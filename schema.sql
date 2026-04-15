@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS registrants (
     name VARCHAR(255) NOT NULL,
     school VARCHAR(255) NOT NULL,
     phone VARCHAR(64),
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
     status VARCHAR(32) NOT NULL DEFAULT 'pending',
     check_in_code VARCHAR(64) UNIQUE,
     attended_at TIMESTAMP,

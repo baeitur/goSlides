@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, send_fro
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, SubmitField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, Optional
 
 from app.models import Activity
 from app.services.year_service import get_active_year
@@ -33,7 +33,7 @@ class RegistrationForm(FlaskForm):
     name = StringField("Full Name", validators=[DataRequired()])
     school = StringField("School / Institution", validators=[DataRequired()])
     phone = StringField("No WA", validators=[DataRequired()])
-    email = EmailField("Email", validators=[Email()])
+    email = EmailField("Email", validators=[Optional(), Email()])
     file = FileField("Berkas", validators=[FileAllowed(["pdf", "jpg", "jpeg", "png", "doc", "docx"], "Berkas tidak valid")])
     submit = SubmitField("Register")
 
