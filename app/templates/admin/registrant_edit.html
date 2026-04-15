@@ -1,0 +1,45 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<nav class="text-sm text-gray-500 mb-6">
+  <a href="{{ url_for('admin.activities_list', year_id=registrant.activity.year_id) }}" class="hover:text-primary">{{ registrant.activity.year.name }}</a>
+  <span class="mx-2">/</span>
+  <a href="{{ url_for('admin.activity_edit', activity_id=registrant.activity.id) }}" class="hover:text-primary">{{ registrant.activity.title }}</a>
+  <span class="mx-2">/</span>
+  <a href="{{ url_for('admin.registrants_list', activity_id=registrant.activity.id) }}" class="hover:text-primary">Pendaftar</a>
+  <span class="mx-2">/</span>
+  <span class="text-gray-800">Ubah pendaftar</span>
+</nav>
+<h1 class="font-heading font-bold text-2xl text-gray-900 mb-6">Ubah pendaftar</h1>
+
+<div class="bg-white rounded-2xl shadow-card border border-gray-100 p-8 max-w-2xl">
+  <form method="post" action="" enctype="multipart/form-data" class="space-y-5">
+    <div>
+      <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
+      <input type="text" id="name" name="name" value="{{ registrant.name }}" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+    </div>
+    <div>
+      <label for="school" class="block text-sm font-medium text-gray-700 mb-1">Sekolah *</label>
+      <input type="text" id="school" name="school" value="{{ registrant.school }}" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+    </div>
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+      <input type="email" id="email" name="email" value="{{ registrant.email }}" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+    </div>
+    <div>
+      <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
+      <input type="text" id="phone" name="phone" value="{{ registrant.phone or '' }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+    </div>
+    <div>
+      <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Berkas (biarkan kosong jika tidak ingin mengubah)</label>
+      <input type="file" id="file" name="file" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+      {% if registrant.file %}
+      <p class="text-sm text-gray-600 mt-1">Berkas saat ini: <a href="{{ url_for('admin.registrant_file', filename=registrant.file) }}" target="_blank" class="text-primary underline">{{ registrant.file }}</a></p>
+      {% endif %}
+    </div>
+    <div class="flex gap-4">
+      <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Simpan Perubahan</button>
+      <a href="{{ url_for('admin.registrants_list', activity_id=registrant.activity.id) }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-300">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

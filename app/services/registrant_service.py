@@ -90,3 +90,19 @@ def delete_registrant(registrant_id):
     db.session.delete(reg)
     db.session.commit()
     return reg
+
+
+def update_registrant(registrant_id, name=None, school=None, phone=None, email=None, file=None):
+    reg = Registrant.query.get_or_404(registrant_id)
+    if name is not None:
+        reg.name = name
+    if school is not None:
+        reg.school = school
+    if phone is not None:
+        reg.phone = phone
+    if email is not None:
+        reg.email = email
+    if file is not None:
+        reg.file = file
+    db.session.commit()
+    return reg

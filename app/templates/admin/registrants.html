@@ -42,7 +42,14 @@
           <td class="py-3 px-4 font-medium">{{ r.name }}</td>
           <td class="py-3 px-4 text-gray-600">{{ r.school }}</td>
           <td class="py-3 px-4 text-gray-600">{{ r.email }}</td>
-          <td class="py-3 px-4 text-gray-600">{{ r.phone or '—' }}</td>
+          <td class="py-3 px-4 text-gray-600">
+            {% if r.phone %}
+              {% set phone_link = r.phone|replace(' ', '')|replace('+', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
+              <a href="https://wa.me/{{ phone_link }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">{{ r.phone }}</a>
+            {% else %}
+              —
+            {% endif %}
+          </td>
           <td class="py-3 px-4">
             <span class="inline-block px-3 py-1 rounded-full text-xs font-medium {% if r.status == 'verified' %}bg-green-100 text-green-800{% else %}bg-amber-100 text-amber-800{% endif %}">
               {{ 'Terverifikasi' if r.status == 'verified' else 'Menunggu' }}
@@ -65,6 +72,7 @@
             {% endif %}
           </td>
           <td class="py-3 px-4 text-right">
+            <a href="{{ url_for('admin.registrant_edit', registrant_id=r.id) }}" class="text-blue-600 text-sm font-medium hover:underline mr-2">Edit</a>
             {% if r.status != 'verified' %}
             <form method="post" action="{{ url_for('admin.registrant_verify', registrant_id=r.id) }}" class="inline">
               <button type="submit" class="text-primary text-sm font-medium hover:underline">Verifikasi</button>

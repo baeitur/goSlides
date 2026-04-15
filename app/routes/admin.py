@@ -1,6 +1,7 @@
 """Admin routes: login, years, activities, registrants, about, contact, gallery, backup, activity log, PDF export, QR."""
 import os
 import io
+import qrcode
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_file, current_app
 from flask_login import login_user, logout_user, login_required, current_user
@@ -8,9 +9,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, EmailField, PasswordField, SubmitField, TextAreaField, SelectField, IntegerField, DateField, BooleanField
 from wtforms.validators import DataRequired, Email, Optional
-import qrcode
-
-from app.models import db, User, Year, Activity, Registrant, Gallery
+from werkzeug.utils import secure_filename
 from app.utils.decorators import operator_or_above, super_admin_required
 from app.services.auth_service import get_user_by_email, verify_password
 from app.services.year_service import get_all_years, set_active_year, create_year, update_year, delete_year
@@ -29,7 +28,9 @@ from app.services.registrant_service import (
     mark_attended,
     ensure_check_in_code,
     delete_registrant,
+    update_registrant,
 )
+from app.models import Registrant
 from app.services.about_service import get_about, update_about
 from app.services.contact_service import get_all_messages
 from app.services.gallery_service import (
@@ -354,12 +355,35 @@ def registrant_delete(registrant_id):
     return redirect(url_for("admin.registrants_list", activity_id=reg.activity_id))
 
 
+@admin_bp.route("/registrants/<int:registrant_id>/edit", methods=["GET", "POST"])
+@login_required
+@operator_or_above
+def registrant_edit(registrant_id):
+    reg = Registrant.query.get_or_404(registrant_id)
+    if request.method == "POST":
+        name = request.form.get("name")
+        school = request.form.get("school")
+        phone = request.form.get("phone")
+        email = request.form.get("email")
+        file = request.files.get("file")
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(current_app.root_path, "uploads", "registrant_files", filename)
+            file.save(file_path)
+            update_registrant(registrant_id, name=name, school=school, phone=phone, email=email, file=filename)
+        else:
+            update_registrant(registrant_id, name=name, school=school, phone=phone, email=email)
+        log_action("update", entity_type="registrant", entity_id=registrant_id)
+        flash("Pendaftar telah diperbarui.", "success")
+        return redirect(url_for("admin.registrants_list", activity_id=reg.activity_id))
+    return render_template("admin/registrant_edit.html", registrant=reg)
+
+
 # Place this route after admin_bp is defined and after all imports
 @admin_bp.route("/registrant_files/<filename>")
 @login_required
 @operator_or_above
 def registrant_file(filename):
-    from werkzeug.utils import secure_filename
     uploads_dir = os.path.join(current_app.root_path, "uploads", "registrant_files")
     safe_name = secure_filename(filename)
     file_path = os.path.join(uploads_dir, safe_name)

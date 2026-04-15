@@ -57,6 +57,12 @@ def create_app(config_class=Config):
     app.register_blueprint(public_bp)
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
+    # Global context processor for active year
+    from app.services.year_service import get_active_year
+    @app.context_processor
+    def inject_active_year():
+        return {'active_year': get_active_year()}
+
     return app
 
 
