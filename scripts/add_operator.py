@@ -10,10 +10,10 @@ import os
 # Agar app bisa di-import dari root proyek
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from werkzeug.security import generate_password_hash
 from app import create_app
 from app.models import db, User
 from app.models import ROLE_OPERATOR
+from app.services.auth_service import pwd_context
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
         user = User(
             name=name,
             email=email,
-            password=generate_password_hash(password, method="scrypt"),
+            password=pwd_context.hash(password),
             role=ROLE_OPERATOR,
         )
         db.session.add(user)

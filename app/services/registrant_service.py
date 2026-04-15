@@ -83,3 +83,10 @@ def ensure_check_in_code(reg):
     reg.check_in_code = code
     db.session.commit()
     return code
+
+
+def delete_registrant(registrant_id):
+    reg = Registrant.query.get_or_404(registrant_id)
+    db.session.delete(reg)
+    db.session.commit()
+    return reg

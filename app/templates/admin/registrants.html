@@ -75,6 +75,9 @@
               <button type="submit" class="text-gray-600 text-sm hover:underline">Batalkan verifikasi</button>
             </form>
             {% endif %}
+            <form method="post" action="{{ url_for('admin.registrant_delete', registrant_id=r.id) }}" class="inline ml-2" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pendaftar ini?')">
+              <button type="submit" class="text-red-600 text-sm font-medium hover:underline">Hapus</button>
+            </form>
           </td>
         </tr>
         {% endfor %}
