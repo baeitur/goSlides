@@ -66,3 +66,19 @@ def notify_registration_confirmation(registrant, activity):
         "We will verify your registration shortly."
     )
     return send_whatsapp_message(phone, message)
+
+
+def generate_payment_verification_link(registrant) -> str:
+    """Generate wa.me link to send payment verification message to registrant."""
+    phone = (registrant.phone or "").strip().replace(" ", "").replace("-", "")
+    if phone.startswith("08"):
+        phone = "62" + phone[1:]
+    if not phone:
+        return ""
+    
+    message = f"Pembayaran sudah di lakukan atas nama: {registrant.name} untuk pendaftaran Go Slides dengan kategori acara {registrant.activity.title}"
+    # URL encode the message
+    import urllib.parse
+    encoded_message = urllib.parse.quote(message)
+    
+    return f"https://wa.me/{phone}?text={encoded_message}"

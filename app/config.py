@@ -44,6 +44,9 @@ class Config:
 
     WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "6281317707705").replace(" ", "")
 
+    # Payment contact person phone number for payment verification notifications
+    PAYMENT_PIC_PHONE = os.environ.get("PAYMENT_PIC_PHONE", "6281317707705").replace(" ", "")
+
     WHATSAPP_ACCOUNT_SID = os.environ.get("WHATSAPP_ACCOUNT_SID", "")
     WHATSAPP_AUTH_TOKEN = os.environ.get("WHATSAPP_AUTH_TOKEN", "")
     WHATSAPP_FROM_NUMBER = os.environ.get("WHATSAPP_FROM_NUMBER", "").replace(" ", "")

@@ -5,6 +5,7 @@ import qrcode
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_file, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from markupsafe import Markup
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, EmailField, PasswordField, SubmitField, TextAreaField, SelectField, IntegerField, DateField, BooleanField
@@ -30,7 +31,7 @@ from app.services.registrant_service import (
     delete_registrant,
     update_registrant,
 )
-from app.models import Registrant
+from app.models import Registrant, Year
 from app.services.about_service import get_about, update_about
 from app.services.contact_service import get_all_messages
 from app.services.gallery_service import (
@@ -44,6 +45,7 @@ from app.services.activity_log_service import log_action, get_recent_logs
 from app.services.dashboard_service import get_dashboard_stats
 from app.services.pdf_export_service import export_registrants_pdf
 from app.services.sponsor_service import SponsorService
+from app.services.whatsapp_service import generate_payment_verification_link
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -316,8 +318,18 @@ def registrant_qr(registrant_id):
 def registrant_verify(registrant_id):
     verify_registrant(registrant_id)
     log_action("verify", entity_type="registrant", entity_id=registrant_id)
-    flash("Pendaftar telah diverifikasi.", "success")
     reg = Registrant.query.get_or_404(registrant_id)
+    
+    # Generate wa.me link for payment notification to registrant
+    wa_link = generate_payment_verification_link(reg)
+    
+    flash("Pendaftar telah diverifikasi.", "success")
+    if wa_link:
+        flash(
+            Markup(f'<a href="{wa_link}" target="_blank" rel="noopener" class="text-primary underline font-medium">Klik untuk kirim notifikasi pembayaran ke peserta via WhatsApp</a>'),
+            "info"
+        )
+    
     return redirect(url_for("admin.registrants_list", activity_id=reg.activity_id))
 
 
