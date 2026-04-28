@@ -44,6 +44,7 @@ from app.services.gallery_service import (
 from app.services.activity_log_service import log_action, get_recent_logs
 from app.services.dashboard_service import get_dashboard_stats
 from app.services.pdf_export_service import export_registrants_pdf
+from app.services.excel_export_service import export_registrants_excel
 from app.services.sponsor_service import SponsorService
 from app.services.whatsapp_service import generate_payment_verification_link
 
@@ -296,6 +297,17 @@ def registrants_export_pdf(activity_id):
     buffer = export_registrants_pdf(activity, registrants)
     filename = f"participants-{activity.title[:30].replace(' ', '-')}.pdf"
     return send_file(buffer, mimetype="application/pdf", as_attachment=True, download_name=filename)
+
+
+@admin_bp.route("/activities/<int:activity_id>/registrants/export-excel", methods=["GET"])
+@login_required
+@operator_or_above
+def registrants_export_excel(activity_id):
+    activity = get_activity_or_404(activity_id)
+    registrants = get_registrants_for_activity(activity_id)
+    buffer = export_registrants_excel(activity, registrants)
+    filename = f"participants-{activity.title[:30].replace(' ', '-')}.xlsx"
+    return send_file(buffer, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", as_attachment=True, download_name=filename)
 
 
 @admin_bp.route("/registrants/<int:registrant_id>/qr", methods=["GET"])
